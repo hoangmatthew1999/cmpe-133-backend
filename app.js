@@ -48,19 +48,25 @@ app.post('/user-create',(req,res)=>{
       }); 
 
 });
-// app.get('/see-user',(req,res)=>{
- 
-//   MongoClient.connect(url, function(err, db) {
-//     if (err) throw err;
-//     var dbo = db.db("cmpe133");
-//     dbo.collection("cmpe133").find({}).toArray(function(err, result) {
-//       if (err) throw err;
-//       console.log(result);
-//       db.close();
-//     });
-//   }); 
+app.get('/see-user',(req,res)=>{
+  var resultArray = [];
 
-// });
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    dbo.collection("cmpe133").find({}).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+  }); 
+
+// res.send("see user");
+});
 
 
 
