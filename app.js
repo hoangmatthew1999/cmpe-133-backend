@@ -32,14 +32,12 @@ app.use( express.static('form')    );
 const url = "mongodb+srv://atlasAdmin:matthewhoang1999@cluster0.vp2i9.mongodb.net/cmpe133?retryWrites=true&w=majority";
 
 app.post('/user-create',(req,res)=>{
-    console.log("Trying to create a new user");
-    console.log(req.body.fname);    
-    console.log(req.body.lname);    
+    console.log("Trying to create a new user");   
     res.end();
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("cmpe133");
-        var myobj = { name: "Company Inc", address: "Highway 37" };
+        var myobj = { name: "Company Inc", level: "User", userType: "Advisor", limitClient: 5, email: "a@gmail.com" };
         dbo.collection("cmpe133").insertOne(myobj, function(err, res) {
           if (err) throw err;
           console.log("1 document inserted");
@@ -65,9 +63,27 @@ app.get('/see-user',(req,res)=>{
 
   }); 
 
-// res.send("see user");
 });
 
+app.get('/see-user/admin',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {level: "Manager"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+  }); 
+
+});
 
 
 app.listen(port = 3012, function() {
