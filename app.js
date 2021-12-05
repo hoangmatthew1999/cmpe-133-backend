@@ -3,19 +3,21 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
-// const cors = require('cors');
+const cors = require('cors');
 
 // create an object from the express function which we contains methods for making requests and starting the server
 const app = express();
 
 app.use(   bodyParser.urlencoded({extended: false})      )
 // create a route for a GET request to '/' - when that route is reached, run a function
-// app.use(cors);
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
+app.use(cors( {origin: "http://localhost:4200/archive"}));
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 
 app.get("/", function(request, response) {
@@ -28,8 +30,8 @@ app.get("/", function(request, response) {
 });
 
 app.use( express.static('form')    );
-// let's tell our server to listen on port 3000 and when the server starts, run a callback function that console.log's a message
-const url = "mongodb+srv://atlasAdmin:matthewhoang1999@cluster0.vp2i9.mongodb.net/cmpe133?retryWrites=true&w=majority";
+// let's tell our server to listen on port 3012 and when the server starts, run a callback function that console.log's a message
+const url = "mongodb+srv://john:Asdfg12345@cluster0.vp2i9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 app.post('/user-create',(req,res)=>{
     console.log("Trying to create a new user");   
@@ -109,6 +111,9 @@ app.get('/see-user/user',(req,res)=>{
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
+    db.getCollection('cmpe133').aggregate([{$group: {Level: "User"}}])
+
+
     var dbo = db.db("cmpe133");
     let query = {level: "User"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
@@ -119,6 +124,27 @@ app.get('/see-user/user',(req,res)=>{
       res.send(result);
       db.close();
     });
+
+  }); 
+
+});
+
+app.get('/see-user/archive',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {archive: "true"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      //resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
 
   }); 
 
