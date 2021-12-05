@@ -73,7 +73,7 @@ app.get('/see-user/manager',(req,res)=>{
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("cmpe133");
-    let query = {level: "Manager"}
+    let query = {level: "Manager", archive: "false"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
@@ -92,7 +92,7 @@ app.get('/see-user/admin',(req,res)=>{
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("cmpe133");
-    let query = {level: "Admin"}
+    let query = {level: "Admin", archive: "false"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
@@ -111,11 +111,68 @@ app.get('/see-user/user',(req,res)=>{
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
-    db.getCollection('cmpe133').aggregate([{$group: {Level: "User"}}])
-
-
     var dbo = db.db("cmpe133");
-    let query = {level: "User"}
+    let query = {level: "User", archive: "false"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+  }); 
+
+});
+
+app.get('/see-user/advisor',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {level: "Advisor", archive: "false"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+  }); 
+
+});
+
+app.get('/see-user/coach',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {level: "Coach", archive: "false"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+  }); 
+
+});
+
+app.get('/see-user/specialist',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {level: "Specialist", archive: "false"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
