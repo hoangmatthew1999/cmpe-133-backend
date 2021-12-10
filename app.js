@@ -39,7 +39,7 @@ app.post('/user-create',(req,res)=>{
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("cmpe133");
-        var myobj = { name: "Company Inc", level: "User", userType: "Advisor", limitClient: 5, email: "a@gmail.com" };
+        var myobj = { name: "haha", level: "User", userType: "Advisor", limitClient: 5, email: "abc@gmail.com" };
         dbo.collection("cmpe133").insertOne(myobj, function(err, res) {
           if (err) throw err;
           console.log("1 document inserted");
@@ -193,6 +193,45 @@ app.get('/see-user/archive',(req,res)=>{
     if (err) throw err;
     var dbo = db.db("cmpe133");
     let query = {archive: "true"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      //resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      res.send(result);
+      db.close();
+    });
+
+
+  }); 
+
+});
+
+
+app.post('/unarchive',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+  
+    dbo.collection("cmpe133").updateOne(req.body, {
+      $set:{
+        archive: "false"
+      }
+    });
+    res.send("User unarchived!");
+    db.close();
+  })
+});
+
+app.get('/see-user/notification',(req,res)=>{
+  var resultArray = [];
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {notification: "true"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
