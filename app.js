@@ -8,13 +8,14 @@ const cors = require('cors');
 // create an object from the express function which we contains methods for making requests and starting the server
 const app = express();
 
-app.use(   bodyParser.urlencoded({extended: false})      )
+app.use(bodyParser.urlencoded({extended: false})      )
+app.use(bodyParser.json());
 // create a route for a GET request to '/' - when that route is reached, run a function
-app.use(cors( {origin: "http://localhost:4200/archive"}));
+app.use(cors( {origin: "http://localhost:4200"}));
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
@@ -195,17 +196,13 @@ app.get('/see-user/archive',(req,res)=>{
     let query = {archive: "true"}
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
-      // console.log(result);
-      //resultArray.push(result);
-      // console.log(resultArray[0], "result array")
+    
       res.send(result);
       db.close();
     });
-
-
   }); 
-
 });
+
 
 
 app.post('/unarchive',(req,res)=>{
@@ -214,15 +211,21 @@ app.post('/unarchive',(req,res)=>{
 
     if (err) throw err;
     var dbo = db.db("cmpe133");
-  
-    dbo.collection("cmpe133").updateOne(req.body, {
-      $set:{
-        archive: "false"
-      }
+    
+    let query = req.body;
+    console.log(query);
+    var update = {$set: {"archive": "true"}};
+
+    var ObjectId = require('mongodb').ObjectID;
+
+    dbo.collection("cmpe133").updateOne({"_id": ObjectId(req.body._id)},
+                                        {$set: {"archive": "false"}}, 
+                                      function(err, res){
+      if (err) throw err;
+      console.log("User unarchived!");
+      db.close();
     });
-    res.send("User unarchived!");
-    db.close();
-  })
+  });
 });
 
 app.get('/see-user/notification',(req,res)=>{
@@ -240,10 +243,58 @@ app.get('/see-user/notification',(req,res)=>{
       res.send(result);
       db.close();
     });
+  });
+});
 
+app.get('/see-user/all',(req,res)=>{
+  var resultArray = [];
 
-  }); 
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {archive: "false"}
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(result);
+      db.close();
+    });
+  });
+});
 
+app.post('/editNotification',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    console.log('Testing notifications')
+    
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+
+    
+    var ObjectId = require('mongodb').ObjectID;
+
+    dbo.collection("cmpe133").updateOne({"_id": ObjectId(req.body._id)}, {$set: {"msg": req.body.msg}}, function(err, res){
+      if (err) throw err;
+      console.log("Msg Editted!");
+      db.close();
+    });
+  });
+});
+
+app.post('/deleteNotification',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+
+    dbo.collection("cmpe133").updateOne({"_id": ObjectId(req.body._id)}, {$set: {"notification": "false"}}, function(err, res){
+      if (err) throw err;
+      console.log("Notification archived");
+      db.close();
+    });
+  });
 });
 
 
