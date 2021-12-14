@@ -316,6 +316,56 @@ app.post('/addNotification',(req,res)=>{
   });
 });
 
+app.post('/see-user/archive',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+
+    dbo.collection("cmpe133").updateOne({"_id": ObjectId(req.body._id)}, {$set: {"archive": "true"}}, function(err, res){
+      if (err) throw err;
+      console.log("User archived");
+      db.close();
+    });
+  });
+});
+
+app.post('/deleteUser',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+
+    dbo.collection("cmpe133").deleteOne({"_id": ObjectId(req.body._id)}, function(err, res){
+      if (err) throw err;
+      console.log("User archived");
+      db.close();
+    });
+  });
+});
+
+app.post('/addUser',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+    const doc = {"archive": "false", "name": req.body.name, "email": req.body.email, "password": req.body.password, "level": req.body.level, "limitClient": req.body.limitClient}
+
+    dbo.collection("cmpe133").insertOne(doc, function(err, res){
+      if (err) throw err;
+      console.log("User created");
+      db.close();
+    });
+  });
+});
+
+
 
 app.listen(port = 3012, function() {
   console.log(" currently running on " + port);
