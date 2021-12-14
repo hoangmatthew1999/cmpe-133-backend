@@ -297,6 +297,25 @@ app.post('/deleteNotification',(req,res)=>{
   });
 });
 
+app.post('/addNotification',(req,res)=>{
+
+  MongoClient.connect(url, function(err, db) {
+
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+    console.log(req.body.msg)
+
+    const doc = {"notification": "true", "msg": req.body.msg}
+
+    dbo.collection("cmpe133").insertOne(doc, function(err, res){
+      if (err) throw err;
+      console.log("Notification created");
+      db.close();
+    });
+  });
+});
+
 
 app.listen(port = 3012, function() {
   console.log(" currently running on " + port);
