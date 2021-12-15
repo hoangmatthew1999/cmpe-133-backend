@@ -10,7 +10,7 @@ const path = require('path');
 const app = express();
 
 
-app.use(bodyParser.urlencoded({extended: false})      )
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 // create a route for a GET request to '/' - when that route is reached, run a function
 app.use(cors( {origin: "http://localhost:4200"}));
@@ -305,7 +305,7 @@ app.get('/see-user/all',(req,res)=>{
   });
 });
 
-app.post('/addNotification',(req,res)=>{
+app.post('/addNotification1',(req,res)=>{
   let levels = req.body.levels;
 
   for(let i = 0;i<levels.length;i++){
@@ -372,6 +372,8 @@ app.post('/addNotification',(req,res)=>{
     var ObjectId = require('mongodb').ObjectID;
     console.log(req.body.msg)
 
+
+
     const doc = {"notification": "true", "msg": req.body.msg}
 
     dbo.collection("cmpe133").insertOne(doc, function(err, res){
@@ -423,6 +425,7 @@ app.post('/addUser',(req,res)=>{
     var ObjectId = require('mongodb').ObjectID;
     const doc = {"archive": "false", "name": req.body.name, "email": req.body.email, "password": req.body.password, "level": req.body.level, "limitClient": req.body.limitClient}
 
+    console.log("Testing addUser: ",req.body);
     dbo.collection("cmpe133").insertOne(doc, function(err, res){
       if (err) throw err;
       console.log("User created");
