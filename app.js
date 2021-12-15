@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 const cors = require('cors');
+const path = require('path');
 
 // create an object from the express function which we contains methods for making requests and starting the server
 const app = express();
+
 
 app.use(bodyParser.urlencoded({extended: false})      )
 app.use(bodyParser.json());
@@ -27,7 +29,7 @@ app.get("/", function(request, response) {
         response - contains useful methods for determining how to respond (with html, text, json, etc.)
     let's respond by sending the text Hello World!
     */
-  return response.send("Hello World!");
+  return response.sendFile((path.join(__dirname + '/form/form.html')));
 });
 
 app.use( express.static('form')    );
@@ -49,6 +51,48 @@ app.post('/user-create',(req,res)=>{
       }); 
 
 });
+
+app.get('/see_message', (req,res)=>{
+  var emailV = req.query.email;
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {email: emailV};
+
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      
+      // console.log(resultArray[0], "result array")
+      res.send(result[0].msg);
+      db.close();
+    });
+
+  }); 
+});
+
+app.get('/login', (req,res)=>{
+  var resultArray = [];
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+    let query = {email: req.query.email, password: req.query.password}
+    
+    dbo.collection("cmpe133").find(query).toArray(function(err, result) {
+      if (err) throw err;
+      // console.log(result);
+      //resultArray.push(result);
+      // console.log(resultArray[0], "result array")
+      //res.send(result);
+      db.close();
+      res.redirect('/see_message?email=' + result[0].email);
+
+    });
+
+  }); 
+
+});
+
 app.get('/see-user',(req,res)=>{
   var resultArray = [];
 
@@ -259,6 +303,28 @@ app.get('/see-user/all',(req,res)=>{
       db.close();
     });
   });
+});
+
+app.post('/addNotification',(req,res)=>{
+  let levels = req.body.levels;
+
+  for(let i = 0;i<levels.length;i++){
+
+  MongoClient.connect(url, function(err, db) {
+
+    console.log('Testing notifications')
+    
+    if (err) throw err;
+    var dbo = db.db("cmpe133");
+
+      dbo.collection("cmpe133").updateMany({"level": levels[i]}, {$set: {"msg": req.body.msg}}, function(err, res){
+        if (err) throw err;
+        console.log("Msg Added");
+        db.close();
+      });
+  });
+}
+
 });
 
 app.post('/editNotification',(req,res)=>{
