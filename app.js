@@ -1,5 +1,5 @@
 // require the express module
-const express = require("express");
+const express = require("express");//basically just importing all the files
 const bodyParser = require('body-parser');
 const mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
@@ -13,10 +13,10 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 // create a route for a GET request to '/' - when that route is reached, run a function
-app.use(cors( {origin: "http://localhost:4200"}));
+app.use(cors( {origin: "http://localhost:4200"}));//setting the origin for the Cross Origin Resource Sharing to work 
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');//allowing cors in all the request types
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
@@ -34,7 +34,7 @@ app.get("/", function(request, response) {
 
 app.use( express.static('form')    );
 // let's tell our server to listen on port 3012 and when the server starts, run a callback function that console.log's a message
-const url = "mongodb+srv://john:Asdfg12345@cluster0.vp2i9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const url = "mongodb+srv://john:Asdfg12345@cluster0.vp2i9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";//the mongodb credentials that we used
 
 app.post('/user-create',(req,res)=>{
     console.log("Trying to create a new user");   
@@ -93,7 +93,7 @@ app.get('/login', (req,res)=>{
 
 });
 
-app.get('/see-user',(req,res)=>{
+app.get('/see-user',(req,res)=>{//see all the users 
   var resultArray = [];
 
   MongoClient.connect(url, function(err, db) {
@@ -112,26 +112,26 @@ app.get('/see-user',(req,res)=>{
 
 });
 
-app.get('/see-user/manager',(req,res)=>{
+app.get('/see-user/manager',(req,res)=>{//sees all the managers
   var resultArray = [];
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("cmpe133");
-    let query = {level: "Manager", archive: "false"}
+    var dbo = db.db("cmpe133");//the database we want to connect to 
+    let query = {level: "Manager", archive: "false"}//the query that we want to search the database
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
       resultArray.push(result);
       // console.log(resultArray[0], "result array")
-      res.send(result);
+      res.send(result);//the only line that matters res or the response object will send result which is what the db returns to the screen
       db.close();
     });
 
   }); 
 
 });
-app.get('/see-user/admin',(req,res)=>{
+app.get('/see-user/admin',(req,res)=>{//sees all the managers
   var resultArray = [];
 
   MongoClient.connect(url, function(err, db) {
@@ -141,7 +141,7 @@ app.get('/see-user/admin',(req,res)=>{
     dbo.collection("cmpe133").find(query).toArray(function(err, result) {
       if (err) throw err;
       // console.log(result);
-      resultArray.push(result);
+//       resultArray.push(result);
       // console.log(resultArray[0], "result array")
       res.send(result);
       db.close();
@@ -406,9 +406,9 @@ app.post('/deleteUser',(req,res)=>{
 
     if (err) throw err;
     var dbo = db.db("cmpe133");
-    var ObjectId = require('mongodb').ObjectID;
+    var ObjectId = require('mongodb').ObjectID;//dont want to have global scope for this so just require in scope 
 
-    dbo.collection("cmpe133").deleteOne({"_id": ObjectId(req.body._id)}, function(err, res){
+    dbo.collection("cmpe133").deleteOne({"_id": ObjectId(req.body._id)}, function(err, res){//delete one where the objectID equals to the form data from front end that is sent 
       if (err) throw err;
       console.log("User archived");
       db.close();
@@ -423,7 +423,7 @@ app.post('/addUser',(req,res)=>{
     if (err) throw err;
     var dbo = db.db("cmpe133");
     var ObjectId = require('mongodb').ObjectID;
-    const doc = {"archive": "false", "name": req.body.name, "email": req.body.email, "password": req.body.password, "level": req.body.level, "limitClient": req.body.limitClient}
+    const doc = {"archive": "false", "name": req.body.name, "email": req.body.email, "password": req.body.password, "level": req.body.level, "limitClient": req.body.limitClient}//use bodyParser to get form data; Thats what req.body means 
 
     console.log("Testing addUser: ",req.body);
     dbo.collection("cmpe133").insertOne(doc, function(err, res){
