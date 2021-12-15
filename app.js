@@ -365,7 +365,23 @@ app.post('/addUser',(req,res)=>{
   });
 });
 
+app.post('/editUser',(req,res)=>{
 
+  MongoClient.connect(url, function(err, db) {
+
+   
+    
+    var dbo = db.db("cmpe133");
+    var ObjectId = require('mongodb').ObjectID;
+    
+
+    dbo.collection("cmpe133").updateOne({"_id": ObjectId(req.body._id)}, {$set: {"archive": "false", "name": req.body.name, "email": req.body.email, "level": req.body.level, "password": req.body.password, "limitClient": req.body.limitClient}}, function(err, res){
+      if (err) throw err;
+      console.log('User editted!');
+      db.close();
+  });
+});
+});
 
 app.listen(port = 3012, function() {
   console.log(" currently running on " + port);
